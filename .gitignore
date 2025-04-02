@@ -1,0 +1,11 @@
+uv.lock
+pyproject.toml
+__pycache__
+.venv
+*.pyc
+*.pyo
+*.pyd
+*.pyw
+*.pyz
+*.pywz
+*.pywz
