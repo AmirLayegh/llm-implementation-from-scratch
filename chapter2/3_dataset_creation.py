@@ -21,7 +21,7 @@ class GPTDatasetV1(Dataset):
         return self.input_ids[idx], self.target_ids[idx]
     
 # a dataloader that creates batches of data
-def create_dataloader_v1(txt, tokenizer, max_length=256, stride=128, batch_size=4, shuffle=True, drop_last=True, num_workers=0):
+def create_dataloader_v1(txt, tokenizer, max_length=4, stride=4, batch_size=8, shuffle=False, drop_last=True, num_workers=0):
     tokenizer = tiktoken.get_encoding("gpt2")
     dataset = GPTDatasetV1(txt, tokenizer, max_length, stride)
     data_loader = DataLoader(
@@ -44,22 +44,36 @@ if __name__ == "__main__":
         txt = f.read()
     tokenizer = tiktoken.get_encoding("gpt2")
     
-    dataloader = create_dataloader_v1(txt, tokenizer=tokenizer,batch_size=1, max_length=4, stride=1, shuffle=False)
+    dataloader = create_dataloader_v1(txt, tokenizer=tokenizer,batch_size=8, max_length=4, stride=4, shuffle=False)
     data_iter = iter(dataloader)
-    first_batch = next(data_iter)
-    print(type(first_batch))
-    print(first_batch)
-    print(first_batch[0].shape, first_batch[1].shape)
-    print(first_batch[0].shape)
-    input_ids = first_batch[0][0]
-    print(input_ids)
-    print(f"The input tensor: {tokenizer.decode(first_batch[0].tolist()[0])}")
-    print(f"The target tensor: {tokenizer.decode(first_batch[1].tolist()[0])}")
+    # first_batch = next(data_iter)
+    # print(type(first_batch))
+    # print(first_batch)
+    # print(first_batch[0].shape, first_batch[1].shape)
+    # print(first_batch[0].shape)
+    # input_ids = first_batch[0][0]
+    # print(input_ids)
+    # print(f"The input tensor: {tokenizer.decode(first_batch[0].tolist()[0])}")
+    # print(f"The target tensor: {tokenizer.decode(first_batch[1].tolist()[0])}")
+    inputs, targets = next(data_iter)
+    print(f"Token IDs: {inputs}")
+    print(f"Inpust shapes: {inputs.shape}")
     
-    vocab_size = tokenizer.n_vocab
-    output_dim = 4
-    embedding = create_embedding(vocab_size, output_dim)
-    print("Embedding: ", embedding(input_ids))
+    vocab_size = 50257
+    output_dim = 256
+    embedding_layer = create_embedding(vocab_size, output_dim)
+    token_embeddings = embedding_layer(inputs)
+    print(f"Token embedding shapes: {token_embeddings.shape}")
+    
+    context_length = 4
+    pos_embedding_layer = create_embedding(context_length, output_dim)
+    pos_embeddings = pos_embedding_layer(torch.arange(context_length))
+    print(f"Pos embedding shapes: {pos_embeddings.shape}")
+    
+    input_embeddings = token_embeddings + pos_embeddings
+    print(f"Input embeddings shapes: {input_embeddings.shape}")
+    
+    #print("Embedding: ", embedding_layer(input_ids))
     
     # second_batch = next(data_iter)
     # print(second_batch)
