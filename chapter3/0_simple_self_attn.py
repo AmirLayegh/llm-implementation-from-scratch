@@ -19,8 +19,34 @@ attn_scores_2 = torch.empty(inputs.shape[0])
 
 for i, x_i in enumerate(inputs):
     attn_scores_2[i] = torch.dot(query, x_i)
+    
+attn_weights_2_tmp = attn_scores_2 / attn_scores_2.sum()
 
-print(attn_scores_2)
+print(f"Attention weights: {attn_weights_2_tmp}")
+print(f"Sum: {attn_weights_2_tmp.sum()}")
+
+
+def softmax_naive(x):
+    return torch.exp(x) / torch.exp(x).sum(dim=0)
+
+attn_weights_2_naive = softmax_naive(attn_scores_2)
+
+print(f"Attention weights: {attn_weights_2_naive}")
+print(f"Sum: {attn_weights_2_naive.sum()}")
+
+attn_weights_2 = torch.softmax(attn_scores_2, dim=0)
+
+print(f"Attention weights: {attn_weights_2}")
+print(f"Sum: {attn_weights_2.sum()}")
+
+context_vec_2 = torch.zeros(query.shape)
+
+for i, x_i in enumerate(inputs):
+    context_vec_2 += attn_weights_2[i] * x_i
+
+print(f"Context vector: {context_vec_2}")
+
+
 
 
 
