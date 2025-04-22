@@ -45,10 +45,10 @@ attn_scores_2 = query_2 @ keys.T
 print(f"attn_scores_2: {attn_scores_2}")
 
 d_k = keys.shape[-1]
-attn_wirghts_2 = torch.softmax(attn_scores_2 / d_k**0.5, dim=-1)
-print(f"attn_wirghts_2: {attn_wirghts_2}")
+attn_weights_2 = torch.softmax(attn_scores_2 / d_k**0.5, dim=-1)
+print(f"attn_weights_2: {attn_weights_2}")
 
-context_vec_2 = attn_wirghts_2 @ values
+context_vec_2 = attn_weights_2 @ values
 print(f"context_vec_2: {context_vec_2}")
 
 
